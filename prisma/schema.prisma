@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model UserProfile {
+  id        Int     @id @default(autoincrement())
+  userId    String
+  name      String?
+  avatar    String?
+  isDefault Boolean
+}
+
+model Genres {
+  id     Int     @id @default(autoincrement())
+  title  String
+  avatar String?
+  Medias Media[]
+}
+
+model Media {
+  id           Int            @id @default(autoincrement())
+  genre_id     Int
+  title        String
+  description  String?
+  type         String
+  genre        Genres         @relation(fields: [genre_id], references: [id])
+  Episods      Episods[]
+  Lists        Lists[]
+  ResumePoints ResumePoints[]
+}
+
+model Episods {
+  id              Int            @id @default(autoincrement())
+  media_id        Int
+  title           String?
+  description     String?
+  video_url       String
+  thumbnail_image String?
+  cover_image     String?
+  episode_number  Int
+  season_number   Int
+  duration        Int
+  release_date    DateTime?
+  media           Media          @relation(fields: [media_id], references: [id])
+  Lists           Lists[]
+  ResumePoints    ResumePoints[]
+}
+
+model Lists {
+  id         Int      @id @default(autoincrement())
+  user_id    String
+  profile_id Int
+  media_id   Int?
+  episods_id Int?
+  added_date DateTime
+  media      Media?   @relation(fields: [media_id], references: [id])
+  episods    Episods? @relation(fields: [episods_id], references: [id])
+}
+
+model ResumePoints {
+  id         Int      @id @default(autoincrement())
+  user_id    String
+  media_id   Int?
+  episods_id Int?
+  media      Media?   @relation(fields: [media_id], references: [id])
+  episods    Episods? @relation(fields: [episods_id], references: [id])
+}
